@@ -1,0 +1,9 @@
+{
+  "vehicles": [
+    { "id": 101, "name": "Fleet Vehicle 101", "moduleType": "Fleet", "status": "Active" },
+    { "id": 202, "name": "Safety Vehicle 202", "moduleType": "Safety", "status": "Active" },
+    { "id": 303, "name": "Medical Vehicle 303", "moduleType": "Medical", "status": "Active" }
+  ],
+  "telemetry": [],
+  "alerts": []
+}

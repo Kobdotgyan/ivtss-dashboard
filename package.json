@@ -1,0 +1,21 @@
+{
+  "name": "ivtss-phase1",
+  "version": "1.0.0",
+  "description": "IVTSS Phase 1 proof of concept",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "ivtss",
+    "telematics",
+    "safety",
+    "iot"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3"
+  }
+}

@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IVTSS Dashboard</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: #111c2d;
+        --panel-alt: #15263f;
+        --primary: #38bdf8;
+        --success: #34d399;
+        --warning: #fbbf24;
+        --danger: #f87171;
+        --text: #e5eefb;
+        --muted: #9cb2d1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #101827);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+
+      .badge {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--primary);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+      }
+
+      .header-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(52, 211, 153, 0.12);
+        color: var(--success);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .live-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--success);
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.9);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 18px;
+      }
+
+      .card h3 {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .metric {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .status {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .status.normal {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--success);
+      }
+      .status.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--warning);
+      }
+      .status.alert {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--danger);
+      }
+
+      .vehicles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+      }
+
+      .vehicle {
+        background: var(--panel-alt);
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .vehicle-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .vehicle h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 12px;
+      }
+
+      .reading {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .label {
+        color: var(--muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+
+      .value {
+        margin-top: 6px;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .alert-box {
+        margin-top: 14px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: white;
+        background: rgba(248, 113, 113, 0.15);
+        border: 1px solid rgba(248, 113, 113, 0.4);
+      }
+
+      .panel {
+        margin-top: 24px;
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .panel h3 {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 18px 0;
+        flex-wrap: wrap;
+      }
+
+      select, button {
+        background: var(--panel-alt);
+        color: var(--text);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: inherit;
+      }
+
+      button {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.3);
+        color: var(--primary);
+        cursor: pointer;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+      }
+
+      .alert-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .alert-item {
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .alert-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .history {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .history-entry {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .detail-panel {
+        margin-top: 28px;
+      }
+
+      .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .detail-content {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 16px;
+      }
+
+      .detail-card {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 12px;
+      }
+
+      .metric-pill {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--primary);
+        font-weight: 700;
+        margin-top: 8px;
+      }
+
+      .score-pill {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        margin-top: 8px;
+      }
+
+      .score-pill.excellent {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--success);
+      }
+
+      .score-pill.good {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--primary);
+      }
+
+      .score-pill.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--warning);
+      }
+
+      .score-pill.critical {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--danger);
+      }
+
+      .chart {
+        width: 100%;
+        height: 170px;
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.06);
+        padding: 8px;
+      }
+
+      .vehicle-clickable {
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+      }
+
+      .vehicle-clickable:hover {
+        transform: translateY(-1px);
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <h1>IVTSS Dashboard</h1>
+        </div>
+        <div class="header-meta">
+          <div class="live-pill"><span class="live-dot"></span> Live telemetry</div>
+          <div class="badge">Phase 1 Proof of Concept</div>
+        </div>
+      </header>
+
+      <section class="cards">
+        <div class="card">
+          <h3>Total Vehicles</h3>
+          <div id="totalVehicles" class="metric">0</div>
+        </div>
+        <div class="card">
+          <h3>Alerts</h3>
+          <div id="alertCount" class="metric">0</div>
+        </div>
+        <div class="card">
+          <h3>Fleet Health</h3>
+          <div id="fleetHealth" class="metric">0%</div>
+        </div>
+        <div class="card">
+          <h3>Driver Safety</h3>
+          <div id="driverSafetyIndex" class="metric">0%</div>
+        </div>
+      </section>
+
+      <div class="controls">
+        <label for="moduleFilter">Filter by module:</label>
+        <select id="moduleFilter">
+          <option value="">All Modules</option>
+          <option value="Fleet">Fleet</option>
+          <option value="Safety">Safety</option>
+          <option value="Medical">Medical</option>
+        </select>
+        <button id="refreshData" type="button">Refresh data</button>
+      </div>
+
+      <section class="panel">
+        <h3>Fleet Trends</h3>
+        <div id="fleetTrends" class="detail-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Driver Rankings</h3>
+        <div id="driverRanking" class="detail-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Route Risk Window</h3>
+        <div id="routeRisk" class="detail-grid"></div>
+      </section>
+
+      <section id="vehicles" class="vehicles"></section>
+
+      <section class="panel detail-panel">
+        <div class="detail-header">
+          <h3>Vehicle Detail</h3>
+          <select id="vehicleDetailSelect"></select>
+        </div>
+        <div id="vehicleDetail" class="detail-content"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Recent Alerts</h3>
+        <ul id="alertList" class="alert-list"></ul>
+      </section>
+    </div>
+
+    <script>
+      const moduleFilter = document.getElementById("moduleFilter");
+      const vehicleDetailSelect = document.getElementById("vehicleDetailSelect");
+      let vehicleCache = [];
+      let selectedVehicleId = null;
+
+      function buildTrendChart(history, key, color) {
+        if (!history || history.length === 0) {
+          return '<div class="chart"><div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9cb2d1;">No trend data</div></div>';
+        }
+
+        const values = history.map((entry) => Number(entry[key] ?? 0));
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = max - min || 1;
+
+        const points = values
+          .map((value, index) => {
+            const x = (index / Math.max(values.length - 1, 1)) * 100;
+            const y = 100 - ((value - min) / range) * 80 - 10;
+            return `${x},${y}`;
+          })
+          .join(" ");
+
+        return `
+          <svg class="chart" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${key} trend chart">
+            <polyline fill="none" stroke="${color}" stroke-width="3" points="${points}"></polyline>
+          </svg>
+        `;
+      }
+
+      function scoreTone(score) {
+        if (score >= 85) return 'excellent';
+        if (score >= 70) return 'good';
+        if (score >= 45) return 'warning';
+        return 'critical';
+      }
+
+      function renderVehicleDetail(vehicle) {
+        const detailEl = document.getElementById("vehicleDetail");
+        if (!vehicle) {
+          detailEl.innerHTML = '<div class="detail-card">Select a vehicle to view detail.</div>';
+          return;
+        }
+
+        const history = vehicle.history || [];
+        const latestHistory = history[0] || {};
+        const safetyTone = scoreTone(vehicle.driverSafetyScore || 100);
+        const behavior = vehicle.driverBehavior || { riskLevel: 'Low Risk', summary: 'No recent driving analysis available.', recommendations: [] };
+        const trip = vehicle.tripAnalytics || { totalDistanceKm: 0, averageSpeedKmh: 0, maxSpeedKmh: 0, riskLevel: 'Low Risk', highlights: ['No trip metrics available.'] };
+        const routeRisk = vehicle.routeRisk || { riskScore: 0, windowLabel: '30m', hotspots: ['No route risk data available.'], summary: 'No route risk data available.' };
+
+        detailEl.innerHTML = `
+          <div class="detail-card">
+            <h2>${vehicle.name}</h2>
+            <div class="metric-pill">${vehicle.moduleType}</div>
+            <div class="score-pill ${safetyTone}">Driver Safety Score: ${vehicle.driverSafetyScore || 100}%</div>
+            <div class="score-pill ${safetyTone}" style="margin-left:8px;">${behavior.riskLevel}</div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div>
+                <div class="label">Speed</div>
+                <div class="value">${vehicle.speedKmh} km/h</div>
+              </div>
+              <div>
+                <div class="label">Engine RPM</div>
+                <div class="value">${vehicle.engineRpm}</div>
+              </div>
+              <div>
+                <div class="label">Temperature</div>
+                <div class="value">${vehicle.cabinTempC}°C</div>
+              </div>
+              <div>
+                <div class="label">Humidity</div>
+                <div class="value">${vehicle.humidityPct}%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h3>Recent Trend</h3>
+            <div class="detail-grid">
+              <div>
+                <div class="label">Speed Trend</div>
+                ${buildTrendChart(history, "speedKmh", "#38bdf8")}
+              </div>
+              <div>
+                <div class="label">Temperature Trend</div>
+                ${buildTrendChart(history, "cabinTempC", "#f87171")}
+              </div>
+            </div>
+            <div style="margin-top:12px; color:#9cb2d1;">
+              Last update: ${new Date(latestHistory.timestamp || vehicle.timestamp).toLocaleString()}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h3>Trip Analytics</h3>
+            <div class="detail-grid">
+              <div>
+                <div class="label">Trip Distance</div>
+                <div class="value">${trip.totalDistanceKm} km</div>
+              </div>
+              <div>
+                <div class="label">Average Speed</div>
+                <div class="value">${trip.averageSpeedKmh} km/h</div>
+              </div>
+              <div>
+                <div class="label">Max Speed</div>
+                <div class="value">${trip.maxSpeedKmh} km/h</div>
+              </div>
+              <div>
+                <div class="label">Trip Risk</div>
+                <div class="value">${trip.riskLevel}</div>
+              </div>
+            </div>
+            <ul style="margin:14px 0 0; padding-left:18px; color:#9cb2d1;">
+              ${trip.highlights.map((item) => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="detail-card">
+            <h3>Route Risk (${routeRisk.windowLabel})</h3>
+            <div class="detail-grid">
+              <div>
+                <div class="label">Risk Score</div>
+                <div class="value">${routeRisk.riskScore}/100</div>
+              </div>
+              <div>
+                <div class="label">Window</div>
+                <div class="value">${routeRisk.windowLabel}</div>
+              </div>
+            </div>
+            <p style="margin:10px 0 8px; color:#e5eefb;">${routeRisk.summary}</p>
+            <ul style="margin:0; padding-left:18px; color:#9cb2d1;">
+              ${routeRisk.hotspots.map((item) => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="detail-card">
+            <h3>Coaching Summary</h3>
+            <p style="margin:0 0 12px; color:#e5eefb;">${behavior.summary}</p>
+            <ul style="margin:0; padding-left:18px; color:#9cb2d1;">
+              ${behavior.recommendations.map((item) => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      async function loadVehicleData() {
+        const selectedModule = moduleFilter.value;
+        const url = selectedModule ? `/api/vehicles?module=${encodeURIComponent(selectedModule)}` : "/api/vehicles";
+        const response = await fetch(url);
+        const data = await response.json();
+        vehicleCache = data.vehicles || [];
+
+        if (!selectedVehicleId || !vehicleCache.some((vehicle) => vehicle.vehicleId === selectedVehicleId)) {
+          selectedVehicleId = vehicleCache[0]?.vehicleId ?? null;
+        }
+
+        vehicleDetailSelect.innerHTML = vehicleCache
+          .map((vehicle) => `<option value="${vehicle.vehicleId}">${vehicle.name}</option>`)
+          .join("");
+        vehicleDetailSelect.value = String(selectedVehicleId || "");
+
+        renderDashboard(vehicleCache, data.alerts || [], data.fleetTrends || null, data.driverRanking || []);
+        const activeVehicle = vehicleCache.find((vehicle) => vehicle.vehicleId === selectedVehicleId) || vehicleCache[0];
+        renderVehicleDetail(activeVehicle);
+      }
+
+      function renderDashboard(vehicles, alerts, fleetTrends = null, driverRanking = []) {
+        const container = document.getElementById("vehicles");
+        const totalVehiclesEl = document.getElementById("totalVehicles");
+        const alertCountEl = document.getElementById("alertCount");
+        const fleetHealthEl = document.getElementById("fleetHealth");
+        const driverSafetyIndexEl = document.getElementById("driverSafetyIndex");
+        const alertListEl = document.getElementById("alertList");
+        const fleetTrendsEl = document.getElementById("fleetTrends");
+        const driverRankingEl = document.getElementById("driverRanking");
+        const routeRiskEl = document.getElementById("routeRisk");
+
+        totalVehiclesEl.textContent = vehicles.length;
+        const alertCount = vehicles.filter(
+          (vehicle) => vehicle.alert !== null,
+        ).length;
+        alertCountEl.textContent = alertCount;
+
+        const safetyPercent = Math.max(
+          0,
+          100 - (alertCount / Math.max(vehicles.length, 1)) * 100,
+        );
+        fleetHealthEl.textContent = `${Math.round(safetyPercent)}%`;
+
+        const averageSafetyScore = vehicles.length
+          ? Math.round(vehicles.reduce((sum, vehicle) => sum + (vehicle.driverSafetyScore || 100), 0) / vehicles.length)
+          : 0;
+        driverSafetyIndexEl.textContent = `${averageSafetyScore}%`;
+
+        const trendData = fleetTrends || {
+          averageSafetyScore,
+          highRiskVehicles: [],
+          trendSummary: ['No fleet trend data available.']
+        };
+
+        fleetTrendsEl.innerHTML = `
+          <div class="detail-card">
+            <div class="label">Average Safety Score</div>
+            <div class="value">${trendData.averageSafetyScore || averageSafetyScore}%</div>
+          </div>
+          <div class="detail-card">
+            <div class="label">High-Risk Vehicles</div>
+            <div class="value">${trendData.highRiskVehicles?.length || 0}</div>
+          </div>
+          <div class="detail-card" style="grid-column:1 / -1;">
+            <div class="label">Trend Summary</div>
+            <ul style="margin:10px 0 0; padding-left:18px; color:#9cb2d1;">
+              ${(trendData.trendSummary || []).map((entry) => `<li>${entry}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+
+        driverRankingEl.innerHTML = (driverRanking.length ? driverRanking : vehicles.map((vehicle) => ({
+          vehicleId: vehicle.vehicleId,
+          name: vehicle.name,
+          driverSafetyScore: vehicle.driverSafetyScore || 100,
+          status: vehicle.status,
+          alertSeverity: vehicle.alert ? vehicle.alert.severity : null,
+          rank: 0
+        }))).slice(0, 5).map((entry) => `
+          <div class="detail-card">
+            <div class="label">#${entry.rank || 1}</div>
+            <div class="value">${entry.name}</div>
+            <div style="margin-top:8px; color:#9cb2d1;">Score: ${entry.driverSafetyScore}% · ${entry.status}</div>
+          </div>
+        `).join("");
+
+        const routeRiskSample = vehicles[0]?.routeRisk || { riskScore: 0, windowLabel: '30m', hotspots: ['No route risk data available.'], summary: 'No route risk data available.' };
+        routeRiskEl.innerHTML = `
+          <div class="detail-card">
+            <div class="label">Current Route Risk</div>
+            <div class="value">${routeRiskSample.riskScore}/100</div>
+          </div>
+          <div class="detail-card">
+            <div class="label">Window</div>
+            <div class="value">${routeRiskSample.windowLabel}</div>
+          </div>
+          <div class="detail-card" style="grid-column:1 / -1;">
+            <div class="label">Summary</div>
+            <p style="margin:10px 0 0; color:#9cb2d1;">${routeRiskSample.summary}</p>
+          </div>
+        `;
+
+        alertListEl.innerHTML = alerts.length
+          ? alerts
+              .map(
+                (alert) => `
+                  <li class="alert-item">
+                    <strong>${alert.type}</strong>
+                    <div>Vehicle ${alert.vehicleId} · ${alert.severity}</div>
+                    <div>${alert.message}</div>
+                  </li>
+                `,
+              )
+              .join("")
+          : '<li class="alert-item">No active alerts.</li>';
+
+        container.innerHTML = vehicles
+          .map((vehicle) => {
+            const statusClass = vehicle.status.toLowerCase();
+            const safetyTone = scoreTone(vehicle.driverSafetyScore || 100);
+            const alertMarkup = vehicle.alert
+              ? `<div class="alert-box"><strong>${vehicle.alert.type}</strong><br>${vehicle.alert.message}</div>`
+              : "";
+
+            const historyMarkup = (vehicle.history || [])
+              .slice(0, 4)
+              .map(
+                (entry) => `
+                  <div class="history-entry">
+                    <div>${new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div>Speed: ${entry.speedKmh} km/h</div>
+                    <div>Temp: ${entry.cabinTempC}°C</div>
+                  </div>
+                `,
+              )
+              .join("");
+
+            return `
+            <article class="vehicle vehicle-clickable" data-vehicle-id="${vehicle.vehicleId}">
+              <div class="vehicle-header">
+                <h2>${vehicle.name}</h2>
+                <span class="status ${statusClass}">${vehicle.status}</span>
+              </div>
+
+              <div class="grid">
+                <div class="reading">
+                  <div class="label">Module</div>
+                  <div class="value">${vehicle.moduleType}</div>
+                </div>
+                <div class="reading">
+                  <div class="label">Safety</div>
+                  <div class="value">${vehicle.driverSafetyScore || 100}%</div>
+                </div>
+                <div class="reading">
+                  <div class="label">Speed</div>
+                  <div class="value">${vehicle.speedKmh} km/h</div>
+                </div>
+                <div class="reading">
+                  <div class="label">RPM</div>
+                  <div class="value">${vehicle.engineRpm}</div>
+                </div>
+                <div class="reading">
+                  <div class="label">Acceleration</div>
+                  <div class="value">${vehicle.accelerationG}g</div>
+                </div>
+                <div class="reading">
+                  <div class="label">Temp</div>
+                  <div class="value">${vehicle.cabinTempC}°C</div>
+                </div>
+              </div>
+
+              <div class="score-pill ${safetyTone}">Driver score</div>
+
+              ${alertMarkup}
+
+              <div class="history">
+                ${historyMarkup || '<div class="history-entry">No history yet.</div>'}
+              </div>
+            </article>
+          `;
+          })
+          .join("");
+
+        container.querySelectorAll(".vehicle-clickable").forEach((card) => {
+          card.addEventListener("click", () => {
+            selectedVehicleId = Number(card.dataset.vehicleId);
+            vehicleDetailSelect.value = String(selectedVehicleId);
+            renderVehicleDetail(vehicleCache.find((vehicle) => vehicle.vehicleId === selectedVehicleId));
+          });
+        });
+      }
+
+      moduleFilter.addEventListener("change", loadVehicleData);
+      document.getElementById("refreshData").addEventListener("click", loadVehicleData);
+      vehicleDetailSelect.addEventListener("change", () => {
+        selectedVehicleId = Number(vehicleDetailSelect.value);
+        const detailVehicle = vehicleCache.find((vehicle) => vehicle.vehicleId === selectedVehicleId);
+        renderVehicleDetail(detailVehicle);
+      });
+
+      loadVehicleData();
+      setInterval(loadVehicleData, 4000);
+    </script>
+  </body>
+</html>
